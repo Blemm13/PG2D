@@ -3,11 +3,11 @@
         <title></title>
     </head>
     <body>
-        <canvas id="myCanvas" width="800px" height="600px"></canvas>
+        <canvas id="myCanvas" width=800px height=600px></canvas>
 
         <script>
             var colors = ['blue', 'red', 'green'];
-            var c,ctx;
+            var c,ctx,color = 0;
 
             function init() {
                 
@@ -15,10 +15,11 @@
                 c = document.getElementById("myCanvas");
                 ctx = c.getContext("2d");
 
+                //draw arc
                 drawArc();
                 
-                // requestAnimationFrame(animate);
-                // var a = setInterval(changeColor, 1000);
+                //change colors every second
+                var a = setInterval(drawArc, 1000);
                 
             }
 
@@ -28,18 +29,19 @@
                 ctx.arc(100, 75, 50, 0, 2 * Math.PI);
 
                 //Change border color
-                ctx.strokeStyle = 'blue';
+                ctx.strokeStyle = colors[color];
                 ctx.stroke();
 
                 //change color inside of a circle
-                ctx.fillStyle = 'blue';
+                ctx.fillStyle = colors[color];
                 ctx.fill();
+                
+                //go to next color
+                color = Math.abs(color-1);
             }
-
-            window.onload = init;
-
-           
             
+            //init on window load
+            window.onload = init;
             
         </script>
     </body>
