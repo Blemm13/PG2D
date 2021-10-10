@@ -3,15 +3,25 @@
         <title></title>
     </head>
     <body>
-        <canvas id="myCanvas" ">
+        <canvas id="myCanvas">
         </canvas>
 
         <script>
+            //Get canvas
             var c = document.getElementById("myCanvas");
             var ctx = c.getContext("2d");
+            
+            //make canvas a circle
             ctx.beginPath();
             ctx.arc(100, 75, 50, 0, 2 * Math.PI);
+
+            //Change border color
+            ctx.strokeStyle = 'blue';
             ctx.stroke();
+
+            //change color inside of a circle
+            ctx.fillStyle = 'blue';
+            ctx.fill();
         </script>
     </body>
 </html>
