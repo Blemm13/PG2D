@@ -3,25 +3,44 @@
         <title></title>
     </head>
     <body>
-        <canvas id="myCanvas">
-        </canvas>
+        <canvas id="myCanvas" width="800px" height="600px"></canvas>
 
         <script>
-            //Get canvas
-            var c = document.getElementById("myCanvas");
-            var ctx = c.getContext("2d");
+            var colors = ['blue', 'red', 'green'];
+            var c,ctx;
+
+            function init() {
+                
+                //Get canvas
+                c = document.getElementById("myCanvas");
+                ctx = c.getContext("2d");
+
+                drawArc();
+                
+                // requestAnimationFrame(animate);
+                // var a = setInterval(changeColor, 1000);
+                
+            }
+
+            function drawArc(){
+                //make canvas a circle
+                ctx.beginPath();
+                ctx.arc(100, 75, 50, 0, 2 * Math.PI);
+
+                //Change border color
+                ctx.strokeStyle = 'blue';
+                ctx.stroke();
+
+                //change color inside of a circle
+                ctx.fillStyle = 'blue';
+                ctx.fill();
+            }
+
+            window.onload = init;
+
+           
             
-            //make canvas a circle
-            ctx.beginPath();
-            ctx.arc(100, 75, 50, 0, 2 * Math.PI);
-
-            //Change border color
-            ctx.strokeStyle = 'blue';
-            ctx.stroke();
-
-            //change color inside of a circle
-            ctx.fillStyle = 'blue';
-            ctx.fill();
+            
         </script>
     </body>
 </html>
