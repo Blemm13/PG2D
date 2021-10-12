@@ -6,8 +6,13 @@
         <canvas id="myCanvas" width=800px height=600px></canvas>
 
         <script>
-            var colors = ['blue', 'green'];
             var c,ctx,color = 0;
+            var g = 0;
+            var b = 255;
+            const TO_GREEN = 1;
+            const TO_BLUE = 0;
+            var loopty_loop = 255;
+            var flag = 0;
 
             function init() {
                 
@@ -19,7 +24,7 @@
                 drawArc();
                 
                 //change colors every second
-                var a = setInterval(drawArc, 1000);
+                var a = setInterval(drawArc, 10);
                 
             }
 
@@ -28,12 +33,10 @@
                 ctx.beginPath();
                 ctx.arc(100, 75, 50, 0, 2 * Math.PI);
 
-                //Change border color
-                ctx.strokeStyle = colors[color];
-                ctx.stroke();
+                changeColors();
 
-                //change color inside of a circle
-                ctx.fillStyle = colors[color];
+                //change color inside a circle
+                ctx.fillStyle = "rgba(0, " + g + ", " + b +", 1)";
                 ctx.fill();
                 
                 //go to next color
@@ -42,6 +45,45 @@
             
             //init on window load
             window.onload = init;
+
+            function changeColors() {
+                if(loopty_loop == 0 || loopty_loop == 255)
+                    flag = flag == 1 ? 0 : 1;
+                
+                
+                if ( flag == TO_GREEN)
+                {
+                    moreGreen();
+                    loopty_loop--
+                }
+                else if (flag == TO_BLUE)
+                {
+                    moreBlue();
+                    loopty_loop++
+                }
+
+                console.log("------------------")
+                
+                console.log(loopty_loop)
+                console.log(flag)
+                console.log(b)
+                console.log(g)
+                
+                console.log("------------------")
+                
+            }
+
+            function moreBlue(){
+                console.log("moreBlue")
+                g--;
+                b++;
+            }
+
+            function moreGreen(){
+                console.log("moreGreen")
+                g++;
+                b--;
+            }
             
         </script>
     </body>
