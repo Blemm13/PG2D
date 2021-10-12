@@ -22,18 +22,18 @@
             var loopty_loop = 255;
             var flag = 0;
 
+            //start
+            window.onload = init;
+
             function init() {
                 
                 //Get canvas
                 c = document.getElementById("myCanvas");
                 ctx = c.getContext("2d");
-
-                //draw arc
-                drawArc();
                 
-                //change colors every second
-                var a = setInterval(drawArc, 10);
-                
+                //Animation
+                setInterval(drawArc, 10);
+                setInterval(drawReflection, 10);
             }
 
             function drawArc(){
@@ -48,10 +48,33 @@
                 ctx.fillStyle = "rgba(0, " + g + ", " + b +", 1)";
                 ctx.fill();
             }
-            
-            //init on window load
-            window.onload = init;
 
+            function drawReflection(){
+
+                //separate options
+                ctx.save();
+
+                //add unnatural reflection shape
+                ctx.transform(1, .1, 0.2, 1, 0, 0);
+
+                //reflect image for realistic mirror reflection
+                ctx.scale(-1, 1);
+
+                //draw reflection
+                ctx.arc(-100, 155, 50, 0, 2 * Math.PI);
+
+                //draw logic
+                changeColors();
+                
+                //change color inside a circle
+                ctx.fillStyle = "rgba(0, " + g + ", " + b +", 1)";
+                ctx.fill();
+
+                //exit reflection options
+                ctx.restore();
+            }
+            
+            //Change color logic
             function changeColors() {
                 if(loopty_loop == 0 || loopty_loop == 255)
                     flag = flag == 1 ? 0 : 1;
@@ -68,11 +91,13 @@
                 }                
             }
 
+            //make circle more blue
             function moreBlue(){
                 g--;
                 b++;
             }
-
+            
+            //make circle more green
             function moreGreen(){
                 g++;
                 b--;
