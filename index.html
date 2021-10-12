@@ -6,11 +6,19 @@
         <canvas id="myCanvas" width=800px height=600px></canvas>
 
         <script>
-            var c,ctx,color = 0;
+
+            //context
+            var c,ctx;
+            
+            //color attributes
             var g = 0;
             var b = 255;
+
+            //consts
             const TO_GREEN = 1;
             const TO_BLUE = 0;
+            
+            //animation variables
             var loopty_loop = 255;
             var flag = 0;
 
@@ -37,10 +45,7 @@
 
                 //change color inside a circle
                 ctx.fillStyle = "rgba(0, " + g + ", " + b +", 1)";
-                ctx.fill();
-                
-                //go to next color
-                color = Math.abs(color-1);
+                ctx.fill();s
             }
             
             //init on window load
@@ -49,7 +54,6 @@
             function changeColors() {
                 if(loopty_loop == 0 || loopty_loop == 255)
                     flag = flag == 1 ? 0 : 1;
-                
                 
                 if ( flag == TO_GREEN)
                 {
@@ -60,27 +64,15 @@
                 {
                     moreBlue();
                     loopty_loop++
-                }
-
-                console.log("------------------")
-                
-                console.log(loopty_loop)
-                console.log(flag)
-                console.log(b)
-                console.log(g)
-                
-                console.log("------------------")
-                
+                }                
             }
 
             function moreBlue(){
-                console.log("moreBlue")
                 g--;
                 b++;
             }
 
             function moreGreen(){
-                console.log("moreGreen")
                 g++;
                 b--;
             }
