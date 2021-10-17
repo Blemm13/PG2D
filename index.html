@@ -1,108 +1,51 @@
+<!DOCTYPE html>
 <html>
-    <head>
-        <title></title>
-    </head>
-    <body>
-        <canvas id="myCanvas" width=800px height=600px></canvas>
+<body>
 
-        <script>
+<canvas id="myCanvas" width="800" height="600" style="border:1px solid #c3c3c3;">
+</canvas>
 
-            //context
-            var c,ctx;
-            
-            //color attributes
-            var g = 0;
-            var b = 255;
+<script>
 
-            //consts
-            const TO_GREEN = 1;
-            const TO_BLUE = 0;
-            
-            //animation variables
-            var loopty_loop = 255;
-            var flag = 0;
+var c = document.getElementById("myCanvas");
+var ctx = c.getContext("2d");
+ctx.fillStyle = "#FF0000";
+i = 350;
+j = 0;
 
-            //start
-            window.onload = init;
+setInterval(function() {moveRight()}, 10);
 
-            function init() {
-                
-                //Get canvas
-                c = document.getElementById("myCanvas");
-                ctx = c.getContext("2d");
-                
-                //Animation
-                setInterval(drawArc, 10);
-                setInterval(drawReflection, 10);
-            }
+function update() {
 
-            function drawArc(){
-                //make canvas a circle
-                ctx.beginPath();
-                ctx.arc(100, 75, 50, 0, 2 * Math.PI);
+}
 
-                //draw logic
-                changeColors();
+function moveRight() {
+     ctx.clearRect(0, 0, myCanvas.width, myCanvas.height)
+     drawRect(i, j);
+     ++i;
+     i %= myCanvas.width;
+}
 
-                //change color inside a circle
-                ctx.fillStyle = "rgba(0, " + g + ", " + b +", 1)";
-                ctx.fill();
-            }
+function moveLeft() {
+     ctx.clearRect(0, 0, myCanvas.width, myCanvas.height)
+     drawRect(i, j);
+     --i;
+     i %= myCanvas.width;
+}
 
-            function drawReflection(){
+function drawRect(x, y){ctx.fillRect(x, y,100,10)};
 
-                //separate options
-                ctx.save();
+window.addEventListener('keyup',this.move,false);
+window.addEventListener('keyleft',this.move,false);
 
-                //add unnatural reflection shape
-                ctx.transform(1, .1, 0.2, 1, 0, 0);
+function move(e) {
+    switch (code) {
+        case 37: this.moveLeft; break;
+        case 39: this.moveRight; break;
+    }
+}
 
-                //reflect image for realistic mirror reflection
-                ctx.scale(-1, 1);
+</script>
 
-                //draw reflection
-                ctx.arc(-100, 155, 50, 0, 2 * Math.PI);
-
-                //draw logic
-                changeColors();
-                
-                //change color inside a circle
-                ctx.fillStyle = "rgba(0, " + g + ", " + b +", 1)";
-                ctx.fill();
-
-                //exit reflection options
-                ctx.restore();
-            }
-            
-            //Change color logic
-            function changeColors() {
-                if(loopty_loop == 0 || loopty_loop == 255)
-                    flag = flag == 1 ? 0 : 1;
-                
-                if ( flag == TO_GREEN)
-                {
-                    moreGreen();
-                    loopty_loop--
-                }
-                else if (flag == TO_BLUE)
-                {
-                    moreBlue();
-                    loopty_loop++
-                }                
-            }
-
-            //make circle more blue
-            function moreBlue(){
-                g--;
-                b++;
-            }
-            
-            //make circle more green
-            function moreGreen(){
-                g++;
-                b--;
-            }
-            
-        </script>
-    </body>
+</body>
 </html>
