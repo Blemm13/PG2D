@@ -13,7 +13,9 @@ var keyState = {};
 
 ctx.fillStyle = "#FF0000";
 i = 350;
-j = 0;
+j = 570;
+
+drawRect(i, j, 100, 10);
 
 // setInterval(function() {update()}, 10);
 
@@ -23,13 +25,7 @@ function checkKey(e) {
 
     e = e || window.event;
 
-    if (e.keyCode == '38') {
-        // up arrow
-    }
-    else if (e.keyCode == '40') {
-        // down arrow
-    }
-    else if (e.keyCode == '37') {
+    if (e.keyCode == '37') {
        moveLeft()
     }
     else if (e.keyCode == '39') {
@@ -58,7 +54,6 @@ function drawRect(x, y){ctx.fillRect(x, y,100,10)};
 
 </script>
 </head>
-</script>
 
 </body>
 </html>
