@@ -9,42 +9,55 @@
 
 var c = document.getElementById("myCanvas");
 var ctx = c.getContext("2d");
+var keyState = {};
+
 ctx.fillStyle = "#FF0000";
 i = 350;
 j = 0;
 
-setInterval(function() {moveRight()}, 10);
+// setInterval(function() {update()}, 10);
 
-function update() {
+document.onkeydown = checkKey;
+
+function checkKey(e) {
+
+    e = e || window.event;
+
+    if (e.keyCode == '38') {
+        // up arrow
+    }
+    else if (e.keyCode == '40') {
+        // down arrow
+    }
+    else if (e.keyCode == '37') {
+       moveLeft()
+    }
+    else if (e.keyCode == '39') {
+       moveRight()
+    }
 
 }
 
 function moveRight() {
      ctx.clearRect(0, 0, myCanvas.width, myCanvas.height)
      drawRect(i, j);
-     ++i;
+     i+=3;
      i %= myCanvas.width;
 }
 
 function moveLeft() {
      ctx.clearRect(0, 0, myCanvas.width, myCanvas.height)
      drawRect(i, j);
-     --i;
+     i-=3;
      i %= myCanvas.width;
 }
 
 function drawRect(x, y){ctx.fillRect(x, y,100,10)};
 
-window.addEventListener('keyup',this.move,false);
-window.addEventListener('keyleft',this.move,false);
 
-function move(e) {
-    switch (code) {
-        case 37: this.moveLeft; break;
-        case 39: this.moveRight; break;
-    }
-}
 
+</script>
+</head>
 </script>
 
 </body>
