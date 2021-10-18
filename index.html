@@ -1,59 +1,111 @@
 <!DOCTYPE html>
 <html>
+
 <body>
 
-<canvas id="myCanvas" width="800" height="600" style="border:1px solid #c3c3c3;">
-</canvas>
+    <canvas id="myCanvas" width="800" height="600" style="border:1px solid #c3c3c3;">
+    </canvas>
 
-<script>
+    <script>
 
-var c = document.getElementById("myCanvas");
-var ctx = c.getContext("2d");
-var keyState = {};
+        var c = document.getElementById("myCanvas");
+        var ctx = c.getContext("2d");
+        var keyState = {};
 
-ctx.fillStyle = "#FF0000";
-i = 350;
-j = 570;
+        ctx.fillStyle = "#FF0000";
+        PaddleX = 350;
+        PaddleY = 570;
 
-drawRect(i, j, 100, 10);
+        nextShotTime = 0;
 
-// setInterval(function() {update()}, 10);
+        var ammo = [];
 
-document.onkeydown = checkKey;
+        drawPaddle(PaddleX, PaddleY, 100, 10);
 
-function checkKey(e) {
+        setInterval(function () { gameLoop() }, 20);
 
-    e = e || window.event;
+        document.onkeydown = checkKey;
 
-    if (e.keyCode == '37') {
-       moveLeft()
-    }
-    else if (e.keyCode == '39') {
-       moveRight()
-    }
+        var proj;
 
-}
+        function gameLoop() {
 
-function moveRight() {
-     ctx.clearRect(0, 0, myCanvas.width, myCanvas.height)
-     drawRect(i, j);
-     i+=3;
-     i %= myCanvas.width;
-}
+            if (!nextShotTime == 0)
+                nextShotTime -= 15
+            ctx.clearRect(0, 0, myCanvas.width, myCanvas.height)
+            drawPaddle(PaddleX, PaddleY);
+            ammo.forEach(function (item, index, array) {
+                if (item.y <= 20)
+                    ammo.splice(index, 1);
+                item.flyBoiii()
+                item.draw()
+            })
+        }
 
-function moveLeft() {
-     ctx.clearRect(0, 0, myCanvas.width, myCanvas.height)
-     drawRect(i, j);
-     i-=3;
-     i %= myCanvas.width;
-}
+        function allowShooting() {
+            allowShooting = true;
+        }
 
-function drawRect(x, y){ctx.fillRect(x, y,100,10)};
+        function checkKey(e) {
 
+            e = e || window.event;
 
+            if (e.keyCode == '37') {
+                console.log("<--")
+                movePaddleLeft()
+            }
+            else if (e.keyCode == '39') {
+                console.log("-->")
+                movePaddleRight()
+            }
+            else if (e.keyCode == '32') {
+                console.log("spacja")
+                if(nextShotTime == 0){
+                    ammo.unshift(new Projectile(PaddleX + 50, 560, 5, Math.PI * 2, 'red'))
+                    nextShotTime = 180;
+                }
+            }
+        }
 
-</script>
-</head>
+        function movePaddleRight() {
+            PaddleX += 4;
+            if (PaddleX >= 690)
+                PaddleX = 690;
+
+        }
+
+        function movePaddleLeft() {
+            PaddleX -= 4;
+            if (PaddleX <= 10)
+                PaddleX = 10;
+        }
+
+        function drawPaddle(x, y) { ctx.fillRect(x, y, 100, 10) };
+
+        class Projectile {
+            constructor(x, y, radius, velocity, color) {
+                this.x = x;
+                this.y = y;
+                this.radius = radius;
+                this.velocity = velocity;
+                this.color = color
+            }
+
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, 360, false);
+                ctx.fillStyle = this.color
+                ctx.fill();
+            }
+
+            flyBoiii() {
+                this.y -= this.velocity;
+            }
+        }
+
+    </script>
+    </head>
 
 </body>
+
 </html>
