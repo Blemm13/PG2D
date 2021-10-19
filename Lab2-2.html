@@ -109,7 +109,7 @@
     function spawnNewEnemy() {
       if (fallingStuff.length >= 5)
         return;
-      fallingStuff.unshift(new FallingStuff(getRandomInt(100, 700), 50, getRandomInt(20, 50), getRandomInt(1, 10) * 0.3, 'blue'))
+      fallingStuff.unshift(new FallingStuff(getRandomInt(100, 700), 50, getRandomInt(20, 50), getRandomInt(1, 10) * 0.5, 'blue'))
       fallingStuffDelay = 600;
     }
 
@@ -135,14 +135,14 @@
     }
 
     function movePaddleRight() {
-      PaddleX += 15;
+      PaddleX += 30;
       if (PaddleX >= 690)
         PaddleX = 690;
 
     }
 
     function movePaddleLeft() {
-      PaddleX -= 15;
+      PaddleX -= 30;
       if (PaddleX <= 10)
         PaddleX = 10;
     }
