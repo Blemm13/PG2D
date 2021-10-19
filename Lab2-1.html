@@ -9,7 +9,9 @@
     <canvas id="myCanvas" width="800" height="600" style="border:1px solid #c3c3c3;">
     </canvas>
   </div>
+
   <script>
+
 
     var c = document.getElementById("myCanvas");
     var ctx = c.getContext("2d");
@@ -34,6 +36,7 @@
     document.onkeydown = checkKey;
 
     function gameLoop() {
+      ctx.clearRect(0, 0, myCanvas.width, myCanvas.height)
 
       if (!nextShotTime == 0)
         nextShotTime -= 15
@@ -43,15 +46,22 @@
       else if (fallingStuffDelay == 0)
         spawnNewEnemy()
 
-      ctx.clearRect(0, 0, myCanvas.width, myCanvas.height)
       drawPaddle(PaddleX, PaddleY);
-      console.log(ammo)
 
       fallingStuff.forEach(function (item, index, array) {
-        if (item.y >= 550)
-          fallingStuff.splice(index, 1);
+
         item.drop()
+
+        //height check
+        if (item.y >= 550) {
+          fallingStuff.splice(index, 1);
+        }
+
+        // Collision check
         item.draw()
+        if (item.contains() == 1) {
+          fallingStuff.splice(index, 1)
+        }
       })
 
       ammo.forEach(function (item, index, array) {
@@ -59,9 +69,7 @@
           ammo.splice(index, 1);
         item.flyBoiii()
         item.draw()
-      })
-
-
+      });
 
     }
 
@@ -72,7 +80,9 @@
     }
 
     function spawnNewEnemy() {
-      fallingStuff.unshift(new FallingStuff(getRandomInt(100, 700), 50, getRandomInt(20, 50), 1.3333, 'blue'))
+      if (fallingStuff.length >= 5)
+        return;
+      fallingStuff.unshift(new FallingStuff(getRandomInt(100, 700), 50, getRandomInt(20, 50), getRandomInt(1, 10) * 0.3, 'blue'))
       fallingStuffDelay = 600;
     }
 
@@ -98,14 +108,14 @@
     }
 
     function movePaddleRight() {
-      PaddleX += 10;
+      PaddleX += 15;
       if (PaddleX >= 690)
         PaddleX = 690;
 
     }
 
     function movePaddleLeft() {
-      PaddleX -= 10;
+      PaddleX -= 15;
       if (PaddleX <= 10)
         PaddleX = 10;
     }
@@ -133,6 +143,13 @@
       }
     }
 
+    function getDistance(xA, yA, xB, yB) {
+      var xDiff = xA - xB;
+      var yDiff = yA - yB;
+
+      return Math.sqrt(xDiff * xDiff + yDiff * yDiff);
+    }
+
     class FallingStuff {
       constructor(x, y, radius, velocity, color) {
         this.x = x;
@@ -154,6 +171,21 @@
       drop() {
         this.y += this.velocity;
       }
+
+      contains() {
+
+        var arrayLength = ammo.length;
+
+        for (var i = 0; i < arrayLength; i++)
+
+          if (getDistance(ammo[i].x, ammo[i].y, this.x, this.y) <= this.radius) {
+            ammo.splice(i, 1)
+
+            return 1;
+          }
+        return -1;
+      };
+
     }
 
   </script>
