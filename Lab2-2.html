@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html>
+
+<body>
+    <div style = "text-align:center;">
+    <canvas id="myCanvas" width="800" height="600" style="border:1px solid #c3c3c3;">
+    </canvas>
+    </div>
+
+    <script>
+
+        var c = document.getElementById("myCanvas");
+        var ctx = c.getContext("2d");
+        var keyState = {};
+
+        ctx.fillStyle = "#FF0000";
+        PaddleX = 350;
+        PaddleY = 570;
+
+        nextShotTime = 0;
+
+        var score = 0
+
+        var lifes = 5;
+
+        var ammo = [];
+
+        var fallingStuff = [];
+
+        var fallingStuffDelay = 600;
+
+        drawPaddle(PaddleX, PaddleY, 100, 10);
+
+        setInterval(function () { gameLoop() }, 20);
+
+        document.onkeydown = checkKey;
+
+        function gameLoop() {
+            ctx.clearRect(0, 0, myCanvas.width, myCanvas.height)
+
+            ctx.font = 'italic 32px sans-serif';
+            ctx.strokeText("Lifes: " + lifes.toString(), 10, 30, 200);
+            ctx.strokeText("Score: " + score.toString(), 10, 62, 200);
+
+
+            if (lifes === 0){
+                ctx.font = 'italic 120px sans-serif'
+                ctx.clearRect(0, 0, myCanvas.width, myCanvas.height);
+                ctx.strokeText("GAME OVER: " + score.toString(), 150, 350, 500);
+                return;
+            }
+
+            if (!nextShotTime == 0)
+                nextShotTime -= 15
+
+            if (!fallingStuffDelay == 0)
+                fallingStuffDelay -= 15
+            else if (fallingStuffDelay == 0)
+                spawnNewEnemy()
+
+            drawPaddle(PaddleX, PaddleY);
+
+            fallingStuff.forEach(function (item, index, array) {
+
+                item.drop()
+
+                //height check
+                if (item.y >= 550) {
+                    fallingStuff.splice(index, 1);
+                    lifes -= 1;
+                }
+
+                // Collision check
+                item.draw()
+                if (item.contains() == 1) {
+                    fallingStuff.splice(index, 1)
+                    score += 1;
+                }
+            })
+
+            ammo.forEach(function (item, index, array) {
+                if (item.y <= 20)
+                    ammo.splice(index, 1);
+                item.flyBoiii()
+                item.draw()
+            });
+
+        }
+
+        function drawScore() {
+            ctx.font = "16px Arial";
+            ctx.fillStyle = "#0095DD";
+            ctx.fillText("Score: " + score, 8, 20);
+        }
+
+        function getRandomInt(min, max) {
+            min = Math.ceil(min);
+            max = Math.floor(max);
+            return Math.floor(Math.random() * (max - min)) + min;
+        }
+
+        function spawnNewEnemy() {
+            if (fallingStuff.length >= 5)
+                return;
+            fallingStuff.unshift(new FallingStuff(getRandomInt(100, 700), 50, getRandomInt(20, 50), getRandomInt(1, 10) * 0.3, 'blue'))
+            fallingStuffDelay = 600;
+        }
+
+        function checkKey(e) {
+
+            e = e || window.event;
+
+            if (e.keyCode == '37') {
+                console.log("<--")
+                movePaddleLeft()
+            }
+            else if (e.keyCode == '39') {
+                console.log("-->")
+                movePaddleRight()
+            }
+            else if (e.keyCode == '32') {
+                console.log("spacja")
+                if (nextShotTime == 0) {
+                    ammo.unshift(new Projectile(PaddleX + 50, 560, 5, Math.PI * 2, 'red'))
+                    nextShotTime = 180;
+                }
+            }
+        }
+
+        function movePaddleRight() {
+            PaddleX += 15;
+            if (PaddleX >= 690)
+                PaddleX = 690;
+
+        }
+
+        function movePaddleLeft() {
+            PaddleX -= 15;
+            if (PaddleX <= 10)
+                PaddleX = 10;
+        }
+
+        function drawPaddle(x, y) { ctx.fillRect(x, y, 100, 10) };
+
+        class Projectile {
+            constructor(x, y, radius, velocity, color) {
+                this.x = x;
+                this.y = y;
+                this.radius = radius;
+                this.velocity = velocity;
+                this.color = color
+            }
+
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, 360, false);
+                ctx.fillStyle = this.color
+                ctx.fill();
+            }
+
+            flyBoiii() {
+                this.y -= this.velocity;
+            }
+        }
+
+        function getDistance(xA, yA, xB, yB) {
+            var xDiff = xA - xB;
+            var yDiff = yA - yB;
+
+            return Math.sqrt(xDiff * xDiff + yDiff * yDiff);
+        }
+
+        class FallingStuff {
+            constructor(x, y, radius, velocity, color) {
+                this.x = x;
+                this.y = y;
+                this.radius = radius;
+                this.velocity = velocity;
+                this.color = color
+            }
+
+            draw() {
+                ctx.save();
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, 360, false);
+                ctx.fillStyle = this.color
+                ctx.fill();
+                ctx.restore();
+            }
+
+            drop() {
+                this.y += this.velocity;
+            }
+
+            contains() {
+
+                var arrayLength = ammo.length;
+
+                for (var i = 0; i < arrayLength; i++)
+
+                    if (getDistance(ammo[i].x, ammo[i].y, this.x, this.y) <= this.radius) {
+                        ammo.splice(i, 1)
+
+                        return 1;
+                    }
+                return -1;
+            };
+
+        }
+
+    </script>
+    </head>
+
+</body>
+
+</html>

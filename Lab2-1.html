@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html>
+
+<body>
+
+    <canvas id="myCanvas" width="800" height="600" style="border:1px solid #c3c3c3;">
+    </canvas>
+
+    <script>
+
+        var c = document.getElementById("myCanvas");
+        var ctx = c.getContext("2d");
+        var keyState = {};
+
+        ctx.fillStyle = "#FF0000";
+        PaddleX = 350;
+        PaddleY = 570;
+
+        nextShotTime = 0;
+
+        var ammo = [];
+
+        var fallingStuff = [];
+
+        var fallingStuffDelay = 600;
+
+        drawPaddle(PaddleX, PaddleY, 100, 10);
+
+        setInterval(function () { gameLoop() }, 20);
+
+        document.onkeydown = checkKey;
+
+        function gameLoop() {
+
+            if (!nextShotTime == 0)
+                nextShotTime -= 15
+
+            if (!fallingStuffDelay == 0)
+                fallingStuffDelay -= 15
+            else if(fallingStuffDelay == 0)
+                spawnNewEnemy()
+
+            ctx.clearRect(0, 0, myCanvas.width, myCanvas.height)
+            drawPaddle(PaddleX, PaddleY);
+            console.log(ammo)
+
+            fallingStuff.forEach(function (item, index, array) {
+                if (item.y >= 550)
+                    fallingStuff.splice(index, 1);
+                item.drop()
+                item.draw()
+            })
+
+            ammo.forEach(function (item, index, array) {
+                if (item.y <= 20)
+                    ammo.splice(index, 1);
+                item.flyBoiii()
+                item.draw()
+            })
+
+          
+
+        }
+
+        function getRandomInt(min, max) {
+            min = Math.ceil(min);
+            max = Math.floor(max);
+            return Math.floor(Math.random() * (max - min)) + min;
+        }
+
+        function spawnNewEnemy() {
+            fallingStuff.unshift(new FallingStuff(getRandomInt(100, 700), 50, getRandomInt(20, 50), 1.3333, 'blue'))
+            fallingStuffDelay = 600;
+        }
+
+        function checkKey(e) {
+
+            e = e || window.event;
+
+            if (e.keyCode == '37') {
+                console.log("<--")
+                movePaddleLeft()
+            }
+            else if (e.keyCode == '39') {
+                console.log("-->")
+                movePaddleRight()
+            }
+            else if (e.keyCode == '32') {
+                console.log("spacja")
+                if (nextShotTime == 0) {
+                    ammo.unshift(new Projectile(PaddleX + 50, 560, 5, Math.PI * 2, 'red'))
+                    nextShotTime = 180;
+                }
+            }
+        }
+
+        function movePaddleRight() {
+            PaddleX += 10;
+            if (PaddleX >= 690)
+                PaddleX = 690;
+
+        }
+
+        function movePaddleLeft() {
+            PaddleX -= 10;
+            if (PaddleX <= 10)
+                PaddleX = 10;
+        }
+
+        function drawPaddle(x, y) { ctx.fillRect(x, y, 100, 10) };
+
+        class Projectile {
+            constructor(x, y, radius, velocity, color) {
+                this.x = x;
+                this.y = y;
+                this.radius = radius;
+                this.velocity = velocity;
+                this.color = color
+            }
+
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, 360, false);
+                ctx.fillStyle = this.color
+                ctx.fill();
+            }
+
+            flyBoiii() {
+                this.y -= this.velocity;
+            }
+        }
+
+        class FallingStuff {
+            constructor(x, y, radius, velocity, color) {
+                this.x = x;
+                this.y = y;
+                this.radius = radius;
+                this.velocity = velocity;
+                this.color = color
+            }
+
+            draw() {
+                ctx.save();
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, 360, false);
+                ctx.fillStyle = this.color
+                ctx.fill();
+                ctx.restore();
+            }
+
+            drop() {
+                this.y += this.velocity;
+            }
+        }
+
+    </script>
+    </head>
+
+</body>
+
+</html>
