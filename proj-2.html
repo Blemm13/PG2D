@@ -5,6 +5,7 @@
 
 <body>
     <a href="index.html">Wróc do ekranu głównego</a>
+    <p>Pojazd ze sterowaniem + droga + przeszkody</p>
 
     <div style="text-align:center;">
         <canvas id="myCanvas" width="800" height="600" style="border:1px solid #c3c3c3;">
@@ -190,7 +191,7 @@
 
 
             for (var i = 0; i < roadStuff.length; i++) {
-                roadStuff[i].y += 1;
+                roadStuff[i].y += 5;
 
                 if (roadStuff[i].y >= 600) {
                     roadStuff[i].y = 0;
@@ -218,11 +219,11 @@
             autko.contains();
             window.requestAnimationFrame(drawGame);
         }
-        setInterval(spawnNewObstacle, 4000);
+        setInterval(spawnNewObstacle, 1000);
 
-        movingElements(290 + 0, -10, 20, 40, 5, 80); //linia przerywana
-        movingElements(180 + 0, -10, 20, 20, 5, 40); //lewy pas przerwy
-        movingElements(400 + 0, -10, 20, 20, 5, 40); //prawy pas przerwy
+        movingElements(290 + 0, -10, 20, 40, 80); //linia przerywana
+        movingElements(180 + 0, -10, 20, 20, 40); //lewy pas przerwy
+        movingElements(400 + 0, -10, 20, 20, 40); //prawy pas przerwy
 
 
 
@@ -234,9 +235,9 @@
             ctx.closePath();
         }
 
-        function movingElements(x, y, x_size, y_size, dy, dist_between_stripes) {
-            for (var i = 0; i < 800; i = i + dist_between_stripes + y_size) {
-                roadStuff.push(new Elements(x, y + i, x_size, y_size, 1));
+        function movingElements(x, y, width, height, frequency) {
+            for (var i = 0; i < 800; i = i + frequency + height) {
+                roadStuff.push(new Elements(x, y + i, width, height, 7));
             }
         }
 
