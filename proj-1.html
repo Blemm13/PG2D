@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html>
+
+<head></head>
+
+<body>
+    <a href="index.html">Wróc do ekranu głównego</a>
+
+    <div style="text-align:center;">
+        <canvas id="myCanvas" width="800" height="600" style="border:1px solid #c3c3c3;">
+        </canvas>
+    </div>
+
+    <script>
+
+        class Elements {
+            constructor(xCoord, yCoord, width, height) {
+                this.x = xCoord;
+                this.y = yCoord;
+                this.width = width;
+                this.height = height;
+            }
+        }
+
+
+        class Car {
+            front = new Image();
+            left = new Image();
+            right = new Image();
+            goLeft = false;
+            goRight = false;
+            speed = 0;
+
+            constructor(posX, posY, sizeX, sizeY) {
+                this.front.src = "front.png";
+                this.left.src = "left.png";
+                this.right.src = "right.png";
+                this.posX = posX;
+                this.posY = posY;
+            }
+
+            pickPosition() {
+                if (this.goLeft) {
+                    ctx.drawImage(this.left, this.posX, this.posY, 80, 80);
+                }
+                else if (this.goRight) {
+                    ctx.drawImage(this.right, this.posX, this.posY, 80, 80);
+                }
+                else {
+                    ctx.drawImage(this.front, this.posX, this.posY, 80, 80);
+                }
+            }
+
+            move(whereTogo) {
+                if (whereTogo == "left") {
+                    this.goLeft = true;
+
+                } else if (whereTogo == "right") {
+                    this.goRight = true;
+
+                } else if (whereTogo == "up") {
+                    this.goLeft = false;
+                    this.goRight = false;
+                }
+            }
+
+            drive() {
+                if (this.goRight) {
+                    this.speed += 3;
+                }
+                if (this.goLeft) {
+                    this.speed -= 3;
+                }
+
+                if (this.speed > 5) {
+                    this.speed = 5;
+                }
+
+                if (this.speed < -5) {
+                    this.speed = -5;
+                }
+
+                this.posX += this.speed;
+                slowDown()
+            }
+        }
+
+        function slowDown() {
+            if (autko.speed > 1) {
+                autko.speed--
+            }
+            else if (autko.speed < -1) {
+                autko.speed++
+            }
+            else {
+                autko.speed = 0
+            }
+        }
+
+        document.addEventListener('keydown', function (e) {
+            if (e.keyCode == 65 || e.keyCode == 37) {
+                autko.move("left");
+            }
+            if (e.keyCode == 68 || e.keyCode == 39) {
+                autko.move("right");
+            }
+        }, false);
+
+        document.addEventListener('keyup', function (e) {
+
+            if (e.keyCode == 65 || e.keyCode == 37) {
+                autko.move("up");
+            }
+            if (e.keyCode == 68 || e.keyCode == 39) {
+                autko.move("up");
+            }
+        }, false);
+
+
+        let autko = new Car(270, 500);
+
+        var c = document.getElementById("myCanvas");
+        var ctx = c.getContext("2d");
+
+        window.onload = (drawGame);
+
+        // -180 380
+        let pivot = 0;
+
+        roadStuff = [];
+
+        function drawGame() {
+
+
+
+            ctx.rect(0, 0, 800, 600);
+            ctx.fillStyle = "#44a832";
+            ctx.fill();
+
+            drawShape(200 + pivot, 0, 200, 600, "#70736d");
+            drawShape(180 + pivot, 0, 20, 600, "#eb4026");
+            drawShape(400 + pivot, 0, 20, 600, "#eb4026 ");
+
+
+            for (var i = 0; i < roadStuff.length; i++) {
+                roadStuff[i].y += 1;
+
+                if (roadStuff[i].y >= 600) {
+                    roadStuff[i].y = 0;
+                }
+
+                if (roadStuff[i].x == 380 + pivot) {
+                    ctx.beginPath();
+                    ctx.rect(roadStuff[i].x + pivot, roadStuff[i].y, roadStuff[i].width, roadStuff[i].height);
+                    ctx.fillStyle = "#70736d";
+                    ctx.fill();
+
+                } else {
+                    ctx.beginPath();
+                    ctx.rect(roadStuff[i].x + pivot, roadStuff[i].y, roadStuff[i].width, roadStuff[i].height);
+                    ctx.fillStyle = "#ffffff";
+                    ctx.fill();
+                }
+
+            }
+            autko.pickPosition()
+            autko.drive();
+
+            window.requestAnimationFrame(drawGame);
+        }
+
+
+        movingElements(290 + 0, -10, 20, 40, 5, 80); //linia przerywana
+        movingElements(180 + 0, -10, 20, 20, 5, 40); //lewy pas przerwy
+        movingElements(400 + 0, -10, 20, 20, 5, 40); //prawy pas przerwy
+
+        function drawShape(x, y, width, height, color) {
+            ctx.beginPath();
+            ctx.rect(x, y, width, height);
+            ctx.fillStyle = color;
+            ctx.fill();
+            ctx.closePath();
+        }
+
+        function movingElements(x, y, x_size, y_size, dy, dist_between_stripes) {
+            for (var i = 0; i < 800; i = i + dist_between_stripes + y_size) {
+                roadStuff.push(new Elements(x, y + i, x_size, y_size, 1));
+            }
+        }
+
+    </script>
+
+</body>
+
+</html>
