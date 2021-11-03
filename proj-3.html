@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html>
+
+<head></head>
+
+<body>
+    <a href="index.html">Wróc do ekranu głównego</a>
+
+    <div style="text-align:center;">
+        <canvas id="myCanvas" width="800" height="600" style="border:1px solid #c3c3c3;">
+        </canvas>
+    </div>
+
+    <script>
+        let score = 0;
+        let gameOver = false;
+
+        function getRandomIntInclusive(min, max) {
+            min = Math.ceil(min);
+            max = Math.floor(max);
+            return Math.floor(Math.random() * (max - min + 1)) + min;
+        }
+        class Elements {
+            constructor(xCoord, yCoord, width, height) {
+                this.x = xCoord;
+                this.y = yCoord;
+                this.width = width;
+                this.height = height;
+            }
+        }
+
+        class Obstacle {
+            posX = 220 + getRandomIntInclusive(0, 100);
+            posY = 0;
+
+            constructor() { }
+
+            draw() {
+                this.posY += 6;
+                drawShape(this.posX + pivot, this.posY, 60, 20, "black");
+            }
+        }
+
+        class Bonus {
+            taken = false;
+            posX = 220 + getRandomIntInclusive(0, 100);
+            posY = 0;
+
+            constructor() { }
+
+            draw() {
+                if (!this.taken) {
+                    this.posY += 4;
+                    drawShape(this.posX + pivot, this.posY, 30, 30, "yellow");
+                }
+            }
+        }
+
+
+        class Car {
+            front = new Image();
+            left = new Image();
+            right = new Image();
+            goLeft = false;
+            goRight = false;
+            speed = 0;
+
+            constructor(posX, posY, sizeX, sizeY) {
+                this.front.src = "front.png";
+                this.left.src = "left.png";
+                this.right.src = "right.png";
+                this.posX = posX;
+                this.posY = posY;
+            }
+
+            pickPosition() {
+                if (this.goLeft) {
+                    ctx.drawImage(this.left, this.posX, this.posY, 80, 80);
+                }
+                else if (this.goRight) {
+                    ctx.drawImage(this.right, this.posX, this.posY, 80, 80);
+                }
+                else {
+                    ctx.drawImage(this.front, this.posX, this.posY, 80, 80);
+                }
+            }
+
+            move(whereTogo) {
+                if (whereTogo == "left") {
+                    this.goLeft = true;
+
+                } else if (whereTogo == "right") {
+                    this.goRight = true;
+
+                } else if (whereTogo == "up") {
+                    this.goLeft = false;
+                    this.goRight = false;
+                }
+            }
+
+            drive() {
+                if (this.goRight) {
+                    this.speed += 3;
+                }
+                if (this.goLeft) {
+                    this.speed -= 3;
+                }
+
+                if (this.speed > 5) {
+                    this.speed = 5;
+                }
+
+                if (this.speed < -5) {
+                    this.speed = -5;
+                }
+
+                this.posX += this.speed;
+                slowDown()
+            }
+
+            contains() {
+
+                var arrayLength = obstacles.length;
+
+                for (var i = 0; i < arrayLength; i++) {
+
+                    if (getDistance(obstacles[i].posX + pivot, obstacles[i].posY - 10, this.posX + 5, this.posY) <= 40) {
+                        gameOver = true;
+                    }
+                }
+
+                arrayLength = bonuses.length;
+
+                for (var i = 0; i < arrayLength; i++) {
+
+                    if (getDistance(bonuses[i].posX + pivot, bonuses[i].posY - 10, this.posX + 5, this.posY) <= 40) {
+
+                        if (bonuses[i].taken == false) {
+                            score += 10;
+
+                        }
+                        bonuses[i].taken = true;
+                        console.log(score)
+                    }
+                }
+
+                return -1;
+            };
+        }
+
+        function slowDown() {
+            if (autko.speed > 1) {
+                autko.speed--
+            }
+            else if (autko.speed < -1) {
+                autko.speed++
+            }
+            else {
+                autko.speed = 0
+            }
+        }
+
+        document.addEventListener('keydown', function (e) {
+            if (e.keyCode == 65 || e.keyCode == 37) {
+                autko.move("left");
+            }
+            if (e.keyCode == 68 || e.keyCode == 39) {
+                autko.move("right");
+            }
+        }, false);
+
+        document.addEventListener('keyup', function (e) {
+
+            if (e.keyCode == 65 || e.keyCode == 37) {
+                autko.move("up");
+            }
+            if (e.keyCode == 68 || e.keyCode == 39) {
+                autko.move("up");
+            }
+        }, false);
+
+        function getDistance(xA, yA, xB, yB) {
+            var xDiff = xA - xB;
+            var yDiff = yA - yB;
+
+            return Math.sqrt(xDiff * xDiff + yDiff * yDiff);
+        }
+
+        let autko = new Car(270, 500);
+
+        var c = document.getElementById("myCanvas");
+        var ctx = c.getContext("2d");
+
+        window.onload = (drawGame);
+
+        // -180 380
+        let pivot = 0;
+
+        roadStuff = [];
+
+        obstacles = []
+        bonuses = []
+
+        function drawGame() {
+
+
+            if (gameOver) {
+                ctx.font = 'italic 120px sans-serif'
+                ctx.clearRect(0, 0, myCanvas.width, myCanvas.height);
+                ctx.strokeText("GAME OVER: " + score.toString(), 150, 350, 500);
+                return;
+            }
+
+            ctx.rect(0, 0, 800, 600);
+            ctx.fillStyle = "#44a832";
+            ctx.fill();
+
+            drawShape(200 + pivot, 0, 200, 600, "#70736d");
+
+            drawShape(180 + pivot, 0, 20, 600, "#eb4026");
+            drawShape(400 + pivot, 0, 20, 600, "#eb4026 ");
+
+
+            ctx.font = 'italic 32px sans-serif';
+            ctx.strokeText("Score: " + score.toString(), 10, 30, 200);
+
+
+
+            for (var i = 0; i < roadStuff.length; i++) {
+                roadStuff[i].y += 5;
+
+                if (roadStuff[i].y >= 600) {
+                    roadStuff[i].y = 0;
+                }
+
+                if (roadStuff[i].x == 380 + pivot) {
+                    ctx.beginPath();
+                    ctx.rect(roadStuff[i].x + pivot, roadStuff[i].y, roadStuff[i].width, roadStuff[i].height);
+                    ctx.fillStyle = "#70736d";
+                    ctx.fill();
+
+                } else {
+                    ctx.beginPath();
+                    ctx.rect(roadStuff[i].x + pivot, roadStuff[i].y, roadStuff[i].width, roadStuff[i].height);
+                    ctx.fillStyle = "#ffffff";
+                    ctx.fill();
+                }
+
+            }
+            for (var i = 0; i < obstacles.length; i++) {
+                obstacles[i].draw();
+            }
+            for (var i = 0; i < bonuses.length; i++) {
+                bonuses[i].draw();
+            }
+            autko.pickPosition()
+            autko.drive();
+            autko.contains();
+            movePivot();
+            window.requestAnimationFrame(drawGame);
+        }
+        setInterval(spawnNewObstacle, 1500);
+        setInterval(spawnNewBonus, 1000);
+
+        movingElements(290 + 0, -10, 20, 40, 80);
+        movingElements(180 + 0, -10, 20, 20, 40);
+        movingElements(400 + 0, -10, 20, 20, 40);
+        pivotDir = true
+        function movePivot() {
+            if (pivotDir)
+                pivot++
+            else
+                pivot--
+
+            if (pivot >= 380)
+                pivotDir = false
+
+            if (pivot <= -180)
+                pivotDir = true;
+        }
+
+        function drawShape(x, y, width, height, color) {
+            ctx.beginPath();
+            ctx.rect(x, y, width, height);
+            ctx.fillStyle = color;
+            ctx.fill();
+            ctx.closePath();
+        }
+
+        function movingElements(x, y, width, height, frequency) {
+            for (var i = 0; i < 800; i = i + frequency + height) {
+                roadStuff.push(new Elements(x, y + i, width, height, 7));
+            }
+        }
+
+        function spawnNewObstacle() {
+            obstacles.push(new Obstacle);
+        }
+
+        function spawnNewBonus() {
+            bonuses.push(new Bonus);
+        }
+
+    </script>
+
+</body>
+
+</html>
