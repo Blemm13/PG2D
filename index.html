@@ -1,108 +1,177 @@
-<html>
-    <head>
-        <title></title>
-    </head>
-    <body>
-        <canvas id="myCanvas" width=800px height=600px></canvas>
+<!DOCTYPE html>
+<html lang="">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <style>
+        canvas {
+            border: 1px solid #d3d3d3;
+            background-color: #f1f1f1;
+        }
+    </style>
+    <title></title>
+</head>
+<body onload="startGame()">
+<script>
+    var status = true;
+    var myGamePiece;
+    var myObstacle;
+    var dx = 1;
+    var dy = 1;
 
-        <script>
+    function startGame() {
+        myGamePiece = new Component(100, 10, "red", 200, 250);
+        myObstacle = new Component(10, 10, "green", 240, 10);
+        myGameArea.start();
+        downleft()
+    }
 
-            //context
-            var c,ctx;
-            
-            //color attributes
-            var g = 0;
-            var b = 255;
+    var myGameArea = {
+        canvas: document.createElement("canvas"),
+        start: function () {
+            this.canvas.width = 480;
+            this.canvas.height = 270;
+            this.context = this.canvas.getContext("2d");
+            document.body.insertBefore(this.canvas, document.body.childNodes[0]);
+            this.interval = setInterval(updateGameArea, 20);
+        },
+        clear: function () {
+            this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        },
+        stop: function (){
+            clearInterval(this.interval);
+        }
+    }
 
-            //consts
-            const TO_GREEN = 1;
-            const TO_BLUE = 0;
-            
-            //animation variables
-            var loopty_loop = 255;
-            var flag = 0;
+    function Component(width, height, color, x, y) {
+        this.w = width;
+        this.h = height;
+        this.speedX = 0;
+        this.speedY = 0;
+        this.x = x;
+        this.y = y;
+        this.dir = 1
+        this.update = function () {
+            ctx = myGameArea.context;
+            ctx.fillStyle = color;
+            ctx.fillRect(this.x, this.y, this.w, this.h);
+        }
+        this.newPos = function () {
+            this.x += this.speedX;
+            this.y += this.speedY;
+        }
+    }
 
-            //start
-            window.onload = init;
+    function updateGameArea() {
 
-            function init() {
-                
-                //Get canvas
-                c = document.getElementById("myCanvas");
-                ctx = c.getContext("2d");
-                
-                //Animation
-                setInterval(drawArc, 10);
-                setInterval(drawReflection, 10);
-            }
-
-            function drawArc(){
-                //make canvas a circle
-                ctx.beginPath();
-                ctx.arc(100, 75, 50, 0, 2 * Math.PI);
-
-                //draw logic
-                changeColors();
-
-                //change color inside a circle
-                ctx.fillStyle = "rgba(0, " + g + ", " + b +", 1)";
-                ctx.fill();
-            }
-
-            function drawReflection(){
-
-                //separate options
-                ctx.save();
-
-                //add unnatural reflection shape
-                ctx.transform(1, .1, 0.2, 1, 0, 0);
-
-                //reflect image for realistic mirror reflection
-                ctx.scale(-1, 1);
-
-                //draw reflection
-                ctx.arc(-100, 155, 50, 0, 2 * Math.PI);
-
-                //draw logic
-                changeColors();
-                
-                //change color inside a circle
-                ctx.fillStyle = "rgba(0, " + g + ", " + b +", 1)";
-                ctx.fill();
-
-                //exit reflection options
-                ctx.restore();
-            }
-            
-            //Change color logic
-            function changeColors() {
-                if(loopty_loop == 0 || loopty_loop == 255)
-                    flag = flag == 1 ? 0 : 1;
-                
-                if ( flag == TO_GREEN)
-                {
-                    moreGreen();
-                    loopty_loop--
+        myGameArea.clear();
+        myObstacle.update();
+        myObstacle.newPos();
+        myGamePiece.newPos();
+        myGamePiece.update();
+        // console.log("COllllllll" + (myObstacle.x < myGamePiece.x + myGamePiece.w &&
+        //     myObstacle.x + myObstacle.w > myGamePiece.x &&
+        //     myObstacle.y < myGamePiece.y + myGamePiece.h &&
+        //     myObstacle.h + myObstacle.y > myGamePiece.y))
+        // console.log("x = " + myObstacle.x + " ---  y = " + myObstacle.y)
+        switch (myObstacle.dir) {
+            case 1:
+                if (myObstacle.x <= 0) {
+                    myObstacle.dir = 2;
+                    downright()
+                } else
+                    downleft()
+                break;
+            case 2:
+                if (checkCollision()) {
+                    console.log("COLLISION!")
+                    myObstacle.dir = 3;
+                    upright()
+                } else if (myObstacle.y >= 270) {
+                    // downright()
+                    console.log("Game Over!")
                 }
-                else if (flag == TO_BLUE)
-                {
-                    moreBlue();
-                    loopty_loop++
-                }                
-            }
+                break;
+            case 3:
+                if (myObstacle.x >= 470) {
+                    myObstacle.dir = 4;
+                    upleft()
+                }
+                break;
+            case 4:
+                if (myObstacle.y <= 0) {
+                    myObstacle.dir = 1;
+                    downleft()
+                }
+                break;
+            default:
+                console.log(`Sorry, we are out of ${expr}.`);
+        }
+    }
 
-            //make circle more blue
-            function moreBlue(){
-                g--;
-                b++;
-            }
-            
-            //make circle more green
-            function moreGreen(){
-                g++;
-                b--;
-            }
-            
-        </script>
-    </body>
+
+    document.addEventListener('keydown', function (e) {
+        if (e.keyCode === 65 || e.keyCode === 37) {
+            clearmove()
+            moveleft()
+        }
+        if (e.keyCode === 68 || e.keyCode === 39) {
+            clearmove()
+            moveright();
+        }
+    }, false);
+
+    function moveleft() {
+        myGamePiece.speedX = -2;
+    }
+
+    function moveright() {
+        myGamePiece.speedX = 2;
+    }
+
+    function downright() {
+        myObstacle.speedX = 2;
+        myObstacle.speedY = 1;
+    }
+
+    function downleft() {
+        myObstacle.speedX = -2;
+        myObstacle.speedY = 1;
+    }
+
+    function upleft() {
+        myObstacle.speedX = -2;
+        myObstacle.speedY = -1;
+    }
+
+    function upright() {
+        myObstacle.speedX = 2;
+        myObstacle.speedY = -1;
+    }
+
+    function clearmove() {
+        myGamePiece.speedX = 0;
+        myGamePiece.speedY = 0;
+    }
+
+    function checkCollision() {
+        return (myObstacle.x < myGamePiece.x + myGamePiece.w &&
+            myObstacle.x + myObstacle.w > myGamePiece.x &&
+            myObstacle.y < myGamePiece.y + myGamePiece.h &&
+            myObstacle.h + myObstacle.y > myGamePiece.y)
+
+    }
+
+    function stop() {
+        myGameArea.stop()
+    }
+
+    function start() {
+        myGameArea.start();
+    }
+</script>
+
+<p>Now there is an obstacle in our gaming area, but still nothing happens when the red square hits it.</p>
+<button onclick="stop()">Stop</button>
+<button onclick="start()">Start</button>
+</body>
 </html>
